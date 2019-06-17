@@ -1,6 +1,6 @@
 def jobName = "SeedJobForSeedJobs"
 
-job(jobName) {
+job("GitOpsUtility/$jobName") {
     description("This seed job was created by one seed job and creates other seed jobs based on some properties!")
     label("master")
     scm {
@@ -28,7 +28,7 @@ job(jobName) {
     steps {
         dsl {
             def seedJobDSL = """
-                job('SeedJobForActualWork') {
+                job('GitOpsUtility/SeedJobForActualWork') {
 
                     // Assume a properties file has been retrieved from the manifest that contains environment specific details
                     Properties props = new Properties()

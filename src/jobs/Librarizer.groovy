@@ -1,6 +1,6 @@
 def jobName = "Librarizer"
 
-job(jobName) {
+job("GitOpsUtility/$jobName") {
     description('Configures shared pipeline libraries from a manifest in a given Git repo.')
     label("master")
     scm {

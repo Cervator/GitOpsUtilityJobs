@@ -1,6 +1,6 @@
 def jobName = "Pluginizer"
 
-job(jobName) {
+job("GitOpsUtility/$jobName") {
     description('Updates plugins as per a list from a given Git repo.')
     label("master")
     scm {

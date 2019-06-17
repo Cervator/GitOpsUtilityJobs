@@ -1,6 +1,6 @@
 def jobName = "Authorizer"
 
-job(jobName) {
+job("GitOpsUtility/$jobName") {
     description('Configures an authorization matrix based on some details from a Git repo')
     label("master")
     scm {

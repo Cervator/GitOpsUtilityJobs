@@ -1,3 +1,7 @@
+folder("GitOpsUtility") {
+    description("Contains an assortment of utility jobs")
+}
+
 def jobName = "Authorizer"
 
 job("GitOpsUtility/$jobName") {

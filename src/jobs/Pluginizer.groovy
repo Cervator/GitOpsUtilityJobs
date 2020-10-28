@@ -49,6 +49,30 @@ job("GitOpsUtility/$jobName") {
         def plugins = pluginsString.split()
         println "The plugins to passed in be installed are: " + plugins
 
+        Map<String, Map<String, String>> independentPlugins = [:]
+
+        // Look for a custom plugin - TODO support multiple in YAML manifest version
+        if (props.containsKey("customPlugin")) {
+            println "Found a custom plugin!"
+            String pluginDetails = props.customPlugin
+            List listedDetails = pluginDetails.split()
+            def name = listedDetails[0]
+            def version = listedDetails[1]
+            def packaging = listedDetails[2]
+            def url = listedDetails[3]
+            println "Got the custom plugin: " + name + ", " + version + ", " + packaging + ", " + url
+
+            // This may show a syntax warning but plain name intended as a variable just became literal "name"
+            independentPlugins << [ "$name" : ["version" : version, "packaging" : packaging, "url" : url]]
+        }
+
+        println "Independent plugins: " + independentPlugins
+
+        def isIndependentPluginsInstalled = false
+        def independentPluginsInstalled = ""
+
+        println "The plugins to passed in be installed are: " + plugins
+
         updateCenter.updateAllSites()
 
         plugins.each {
@@ -73,9 +97,49 @@ job("GitOpsUtility/$jobName") {
             }
         }
 
-        if (isPluginsInstalled) {
+        def runBash(def command) {
+            def process = ['bash', '-c', command.toString().trim()].execute()
+            def output = new StringBuilder(), error = new StringBuilder()
+            process.waitForProcessOutput(output, error)
+            output = output.toString().trim()
+            error = error.toString().trim()
+            return [stdOut: output, stdErr: error, exitCode: process.exitValue(), command: command]
+        }
+
+        independentPlugins.each {
+            if (!pluginManager.getPlugin(it.key)) {
+                println "Checking info for plugin: " + it.key + " " + it.value
+
+                def pluginDownloadCmd = runBash("""
+        curl -o /tmp/${it.key}-${it.value.version}.${it.value.packaging} ${it.value.url}${it.key}-${it.value.version}.${it.value.packaging}
+        """)
+
+                if (pluginDownloadCmd.exitCode != 0) {
+                    println  "Failed to download plugin. Got error: ${pluginDownloadCmd.stdErr} - Used the command: ${pluginDownloadCmd.command}"
+                    return 1
+                }
+
+
+                def pluginDeployCmd = runBash("""
+        cp /tmp/${it.key}-${it.value.version}.${it.value.packaging} /var/jenkins_home/plugins
+        """)
+
+                if (pluginDeployCmd.exitCode != 0) {
+                    println  "Failed to deploy the plugin. Got error: ${pluginDeployCmd.stdErr} - Used the command: ${pluginDeployCmd.command}"
+                    return 1
+                }
+
+                println "Successfully deployed: " + it.key
+                isIndependentPluginsInstalled = true
+                independentPluginsInstalled += it.key + ", "
+            } else {
+                println "The plugin " + it.key + " was already installed, skipped"
+            }
+
+        }
+        if (isPluginsInstalled || isIndependentPluginsInstalled) {
             instance.save()
-            println "Calling safe restart of Jenkins after installing/updating the plugins: " + pluginsInstalled
+            println "Calling safe restart of Jenkins after installing/updating the plugins: " + pluginsInstalled + " " + independentPluginsInstalled + " ."
             instance.doSafeRestart()
         } else {
           println "No plugins updated, no restart needed"

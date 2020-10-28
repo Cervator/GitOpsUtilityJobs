@@ -4,7 +4,7 @@ job("GitOpsUtility/$jobName") {
     description('Thoroughly kills a specific running build for a given job, marking it as aborted')
     label("master")
     parameters {
-        stringParam("JobNameParam", "Full Job Name", "Should be the fully qualified job path including folders, such as 'Crew-Java-Libs-Multibranch-Pipeline/crew-java-lib-oauth2-authorizer/master'")
+        stringParam("JobNameParam", "Full Job Name", "Should be the fully qualified job path including folders, such as 'Some-Multibranch-Pipeline/Some-Job/master'")
         stringParam("BuildNumParam", "Build Number", "The build number that is actively running and needs to be aborted, such as '5'")
     }
     steps {

@@ -115,7 +115,7 @@ job("GitOpsUtility/$jobName") {
                 println "Checking info for plugin: " + it.key + " " + it.value
 
                 def pluginDownloadCmd = runBash("""
-        curl -o /tmp/${it.key}-${it.value.version}.${it.value.packaging} ${it.value.url}
+        curl -oL /tmp/${it.key}-${it.value.version}.${it.value.packaging} ${it.value.url}
         """)
 
                 if (pluginDownloadCmd.exitCode != 0) {

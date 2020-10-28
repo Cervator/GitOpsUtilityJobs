@@ -125,7 +125,7 @@ job("GitOpsUtility/$jobName") {
 
 
                 def pluginDeployCmd = runBash("""
-        cp /tmp/${it.key}-${it.value.version}.${it.value.packaging} $JENKINS_HOME/plugins
+        cp /tmp/${it.key}-${it.value.version}.${it.value.packaging} \$JENKINS_HOME/plugins
         """)
 
                 if (pluginDeployCmd.exitCode != 0) {

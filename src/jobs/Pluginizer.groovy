@@ -123,7 +123,7 @@ job("GitOpsUtility/$jobName") {
                     return 1
                 }
 
-
+                // TODO: Possibly do a compare of any existing file vs new to determine if a change happens
                 def pluginDeployCmd = runBash("""
         cp /tmp/${it.key}-${it.value.version}.${it.value.packaging} \\$JENKINS_HOME/plugins
         """)
@@ -134,7 +134,6 @@ job("GitOpsUtility/$jobName") {
                 }
 
                 println "Successfully deployed: " + it.key
-                println "Got output: ${pluginDeployCmd.stdOut} - Used the command: ${pluginDeployCmd.command}"
                 isIndependentPluginsInstalled = true
                 independentPluginsInstalled += it.key + ", "
             } else {

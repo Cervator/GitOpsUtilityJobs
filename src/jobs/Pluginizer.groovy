@@ -134,6 +134,7 @@ job("GitOpsUtility/$jobName") {
                 }
 
                 println "Successfully deployed: " + it.key
+                println "Got output: ${pluginDeployCmd.stdOut} - Used the command: ${pluginDeployCmd.command}"
                 isIndependentPluginsInstalled = true
                 independentPluginsInstalled += it.key + ", "
             } else {

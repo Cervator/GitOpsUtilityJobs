@@ -7,6 +7,7 @@ job("GitOpsUtility/$jobName") {
         git {
             remote {
                 // TODO: Consider varying this env var to point it at the repo holding the desired manifest
+                println "Setting up job with a GITOPS_MANIFEST_REPO target of " + System.getenv("GITOPS_MANIFEST_REPO")
                 url(System.getenv("GITOPS_MANIFEST_REPO"))
                 // TODO: If using private repos either replace with a username that has access to the DSL repo or make the env var
                 // Note that in a brand new generated Jenkins the credential will need to be created before this will work
